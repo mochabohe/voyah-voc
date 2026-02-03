@@ -18,42 +18,87 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="analyzeCompetitor">
-            <el-icon><Search /></el-icon>
+          <el-button type="primary" @click="analyzeCompetitor" :loading="loading">
+            <el-icon v-if="!loading"><Search /></el-icon>
             对比分析
           </el-button>
         </el-form-item>
       </el-form>
     </el-card>
 
+    <div v-if="showResults">
     <!-- 竞品功能对比矩阵 -->
     <el-card style="margin-top: 16px;">
       <template #header>
         <div style="font-weight: bold;">竞品功能对标矩阵</div>
       </template>
       <el-table :data="comparisonData" border style="width: 100%">
-        <el-table-column prop="feature" label="功能点" width="150" fixed />
-        <el-table-column label="岚图FREE" align="center">
-          <el-table-column prop="lantu" label="支持情况" align="center">
-            <template #default="scope">
-              <el-tag v-if="scope.row.lantu === '支持'" type="success" size="small">
-                ✓ {{ scope.row.lantu }}
-              </el-tag>
-              <el-tag v-else type="danger" size="small">✗ {{ scope.row.lantu }}</el-tag>
-            </template>
-          </el-table-column>
-        </el-table-column>
-        <el-table-column prop="lixiang" label="理想L9" align="center" />
-        <el-table-column prop="xiaopeng" label="小鹏G9" align="center" />
-        <el-table-column prop="wenjie" label="问界M7" align="center" />
-        <el-table-column prop="tengshi" label="腾势D9" align="center" />
-        <el-table-column prop="priority" label="用户关注度" align="center">
+        <el-table-column prop="feature" label="功能点" width="120" fixed />
+        
+        <!-- 通用的单元格渲染模板插槽 -->
+        <el-table-column prop="lantu" label="岚图梦想家" min-width="140">
           <template #default="scope">
-            <el-tag v-if="scope.row.priority === '高'" type="danger">{{ scope.row.priority }}</el-tag>
-            <el-tag v-else-if="scope.row.priority === '中'" type="warning">{{
-              scope.row.priority
-            }}</el-tag>
-            <el-tag v-else>{{ scope.row.priority }}</el-tag>
+            <div class="cell-content">
+              <el-icon v-if="scope.row.lantu.includes('不')" color="#F56C6C"><CloseBold /></el-icon>
+              <el-icon v-else-if="scope.row.lantu.includes('仅') || scope.row.lantu.includes('有限')" color="#E6A23C"><Warning /></el-icon>
+              <!-- 只有'基础唤醒'或'四音区'等明确支持/有内容的才显示勾选，百分比和秒数不显示勾选 -->
+              <el-icon v-else-if="!scope.row.lantu.includes('%') && !scope.row.lantu.includes('秒') && scope.row.lantu !== '全部达标'" color="#67C23A"><Select /></el-icon>
+              <span>{{ scope.row.lantu }}</span>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="lixiang" label="理想 L9" min-width="140">
+          <template #default="scope">
+            <div class="cell-content">
+              <el-icon v-if="scope.row.lixiang.includes('不')" color="#F56C6C"><CloseBold /></el-icon>
+              <el-icon v-else-if="scope.row.lixiang.includes('仅') || scope.row.lixiang.includes('有限')" color="#E6A23C"><Warning /></el-icon>
+              <el-icon v-else-if="!scope.row.lixiang.includes('%') && !scope.row.lixiang.includes('秒')" color="#67C23A"><Select /></el-icon>
+              <span>{{ scope.row.lixiang }}</span>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="xiaopeng" label="小鹏 G9" min-width="140">
+          <template #default="scope">
+            <div class="cell-content">
+              <el-icon v-if="scope.row.xiaopeng.includes('不')" color="#F56C6C"><CloseBold /></el-icon>
+              <el-icon v-else-if="scope.row.xiaopeng.includes('仅') || scope.row.xiaopeng.includes('有限')" color="#E6A23C"><Warning /></el-icon>
+              <el-icon v-else-if="!scope.row.xiaopeng.includes('%') && !scope.row.xiaopeng.includes('秒')" color="#67C23A"><Select /></el-icon>
+              <span>{{ scope.row.xiaopeng }}</span>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="wenjie" label="问界 M7" min-width="140">
+          <template #default="scope">
+            <div class="cell-content">
+              <el-icon v-if="scope.row.wenjie.includes('不')" color="#F56C6C"><CloseBold /></el-icon>
+              <el-icon v-else-if="scope.row.wenjie.includes('仅') || scope.row.wenjie.includes('有限')" color="#E6A23C"><Warning /></el-icon>
+              <el-icon v-else-if="!scope.row.wenjie.includes('%') && !scope.row.wenjie.includes('秒')" color="#67C23A"><Select /></el-icon>
+              <span>{{ scope.row.wenjie }}</span>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="tengshi" label="腾势 D9" min-width="140">
+          <template #default="scope">
+            <div class="cell-content">
+              <el-icon v-if="scope.row.tengshi.includes('不')" color="#F56C6C"><CloseBold /></el-icon>
+              <el-icon v-else-if="scope.row.tengshi.includes('仅') || scope.row.tengshi.includes('有限')" color="#E6A23C"><Warning /></el-icon>
+              <el-icon v-else-if="!scope.row.tengshi.includes('%') && !scope.row.tengshi.includes('秒')" color="#67C23A"><Select /></el-icon>
+              <span>{{ scope.row.tengshi }}</span>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="best" label="行业最佳" min-width="120" />
+
+        <el-table-column prop="priority" label="用户关注度" width="100" align="center">
+          <template #default="scope">
+            <span :style="{ color: scope.row.priority === '高' ? '#F56C6C' : scope.row.priority === '中' ? '#E6A23C' : '#909399', fontWeight: 'bold' }">
+              {{ scope.row.priority }}
+            </span>
           </template>
         </el-table-column>
       </el-table>
@@ -64,7 +109,7 @@
       <el-col :span="12">
         <el-card>
           <template #header>
-            <div style="font-weight: bold;">竞品满意度对比雷达图（满分5分）</div>
+            <div style="font-weight: bold;">竞品满意度</div>
           </template>
           <div ref="radarChart" style="height: 400px;"></div>
         </el-card>
@@ -72,84 +117,117 @@
       <el-col :span="12">
         <el-card>
           <template #header>
-            <div style="font-weight: bold;">声量份额对比图</div>
+            <div style="font-weight: bold;">声量份额</div>
           </template>
           <div ref="shareChart" style="height: 400px;"></div>
         </el-card>
       </el-col>
     </el-row>
 
-    <!-- 竞品情点词云对比 -->
+    <!-- 竞品痛点词云对比 -->
     <el-card style="margin-top: 16px;">
       <template #header>
-        <div style="font-weight: bold;">竞品情点词云对比</div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-weight: bold;">竞品槽点</div>
+          <el-radio-group v-model="viewMode" size="small">
+            <el-radio-button value="bar">柱状图</el-radio-button>
+            <el-radio-button value="cloud">词云</el-radio-button>
+          </el-radio-group>
+        </div>
       </template>
-      <el-row :gutter="16">
-        <el-col :span="8">
-          <div class="word-cloud-container" style="background: #f0f9ff;">
-            <h4 style="margin-bottom: 12px; text-align: center; color: #409eff;">特斯拉</h4>
-            <div class="word-cloud">
-              <span class="word-large">唤醒频繁</span>
-              <span class="word-medium">方言无效</span>
-              <span class="word-small">误触</span>
-              <span class="word-large">逻辑混乱</span>
-              <span class="word-small">延迟</span>
-              <span class="word-medium">体验差</span>
+
+      <!-- 柱状图视图 -->
+      <div v-show="viewMode === 'bar'">
+        <el-row :gutter="16">
+          <el-col :span="8">
+            <div ref="teslaBarChart" style="height: 300px;"></div>
+          </el-col>
+          <el-col :span="8">
+            <div ref="nioBarChart" style="height: 300px;"></div>
+          </el-col>
+          <el-col :span="8">
+            <div ref="xiaopengBarChart" style="height: 300px;"></div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="16" style="margin-top: 16px;">
+          <el-col :span="12">
+            <div ref="lixiangBarChart" style="height: 300px;"></div>
+          </el-col>
+          <el-col :span="12">
+            <div ref="bydBarChart" style="height: 300px;"></div>
+          </el-col>
+        </el-row>
+      </div>
+
+      <!-- 词云视图 -->
+      <div v-show="viewMode === 'cloud'">
+        <el-row :gutter="16">
+          <el-col :span="8">
+            <div class="word-cloud-container" style="background: #f0f9ff;">
+              <h4 style="margin-bottom: 12px; text-align: center; color: #409eff;">特斯拉</h4>
+              <div class="word-cloud">
+                <span class="word-large">唤醒频繁</span>
+                <span class="word-medium">方言无效</span>
+                <span class="word-small">误触</span>
+                <span class="word-large">逻辑混乱</span>
+                <span class="word-small">延迟</span>
+                <span class="word-medium">体验差</span>
+              </div>
             </div>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="word-cloud-container" style="background: #fff3e0;">
-            <h4 style="margin-bottom: 12px; text-align: center; color: #e6a23c;">蔚来</h4>
-            <div class="word-cloud">
-              <span class="word-large">卡顿</span>
-              <span class="word-medium">误唤醒</span>
-              <span class="word-large">功能局限</span>
-              <span class="word-small">响应慢</span>
-              <span class="word-medium">不够灵敏</span>
-              <span class="word-small">偶尔失败</span>
+          </el-col>
+          <el-col :span="8">
+            <div class="word-cloud-container" style="background: #fff3e0;">
+              <h4 style="margin-bottom: 12px; text-align: center; color: #e6a23c;">蔚来</h4>
+              <div class="word-cloud">
+                <span class="word-large">卡顿</span>
+                <span class="word-medium">误唤醒</span>
+                <span class="word-large">功能局限</span>
+                <span class="word-small">响应慢</span>
+                <span class="word-medium">不够灵敏</span>
+                <span class="word-small">偶尔失败</span>
+              </div>
             </div>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="word-cloud-container" style="background: #fce4ec;">
-            <h4 style="margin-bottom: 12px; text-align: center; color: #f56c6c;">小鹏</h4>
-            <div class="word-cloud">
-              <span class="word-large">耗电快</span>
-              <span class="word-small">场景单一</span>
-              <span class="word-large">学习成本高</span>
-              <span class="word-medium">不够智能</span>
-              <span class="word-small">反应慢</span>
+          </el-col>
+          <el-col :span="8">
+            <div class="word-cloud-container" style="background: #fce4ec;">
+              <h4 style="margin-bottom: 12px; text-align: center; color: #f56c6c;">小鹏</h4>
+              <div class="word-cloud">
+                <span class="word-large">耗电快</span>
+                <span class="word-small">场景单一</span>
+                <span class="word-large">学习成本高</span>
+                <span class="word-medium">不够智能</span>
+                <span class="word-small">反应慢</span>
+              </div>
             </div>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row :gutter="16" style="margin-top: 16px;">
-        <el-col :span="12">
-          <div class="word-cloud-container" style="background: #e8f5e9;">
-            <h4 style="margin-bottom: 12px; text-align: center; color: #67c23a;">理想</h4>
-            <div class="word-cloud">
-              <span class="word-large">反应慢</span>
-              <span class="word-large">识别不准</span>
-              <span class="word-medium">不支持连续对话</span>
-              <span class="word-small">准确率低</span>
-              <span class="word-medium">体验一般</span>
+          </el-col>
+        </el-row>
+        <el-row :gutter="16" style="margin-top: 16px;">
+          <el-col :span="12">
+            <div class="word-cloud-container" style="background: #e8f5e9;">
+              <h4 style="margin-bottom: 12px; text-align: center; color: #67c23a;">理想</h4>
+              <div class="word-cloud">
+                <span class="word-large">反应慢</span>
+                <span class="word-large">识别不准</span>
+                <span class="word-medium">不支持连续对话</span>
+                <span class="word-small">准确率低</span>
+                <span class="word-medium">体验一般</span>
+              </div>
             </div>
-          </div>
-        </el-col>
-        <el-col :span="12">
-          <div class="word-cloud-container" style="background: #fff9c4;">
-            <h4 style="margin-bottom: 12px; text-align: center; color: #e6a23c;">比亚迪</h4>
-            <div class="word-cloud">
-              <span class="word-large">功能简陋</span>
-              <span class="word-medium">经常失灵</span>
-              <span class="word-large">交互偏硬</span>
-              <span class="word-small">不够流畅</span>
-              <span class="word-medium">识别差</span>
+          </el-col>
+          <el-col :span="12">
+            <div class="word-cloud-container" style="background: #fff9c4;">
+              <h4 style="margin-bottom: 12px; text-align: center; color: #e6a23c;">比亚迪</h4>
+              <div class="word-cloud">
+                <span class="word-large">功能简陋</span>
+                <span class="word-medium">经常失灵</span>
+                <span class="word-large">交互偏硬</span>
+                <span class="word-small">不够流畅</span>
+                <span class="word-medium">识别差</span>
+              </div>
             </div>
-          </div>
-        </el-col>
-      </el-row>
+          </el-col>
+        </el-row>
+      </div>
     </el-card>
 
     <!-- 市场机会点分析 -->
@@ -178,43 +256,128 @@
         </p>
       </div>
     </el-card>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, nextTick, watch, inject, type Ref } from "vue";
 import * as echarts from "echarts";
+import type { ECharts } from "echarts";
+import { Search, CloseBold, Warning, Select } from "@element-plus/icons-vue";
 
 const featureInput = ref("");
 const radarChart = ref<HTMLElement>();
 const shareChart = ref<HTMLElement>();
+const showResults = ref(false);
+const loading = ref(false);
+
+// 5个品牌的柱状图refs
+const teslaBarChart = ref<HTMLElement>();
+const nioBarChart = ref<HTMLElement>();
+const xiaopengBarChart = ref<HTMLElement>();
+const lixiangBarChart = ref<HTMLElement>();
+const bydBarChart = ref<HTMLElement>();
+
+const viewMode = ref<"bar" | "cloud">("bar"); // 默认显示柱状图
+
+let chartInstances: ECharts[] = [];
+
+// 竞品痛点数据（包含权重，对应词云中的字体大小）
+const painPointsData = [
+  { 
+    brand: "特斯拉", 
+    color: "#409EFF",
+    bgColor: "#f0f9ff",
+    points: [
+      { name: "唤醒频繁", weight: 100 },  // large
+      { name: "逻辑混乱", weight: 100 },  // large
+      { name: "方言无效", weight: 70 },   // medium
+      { name: "体验差", weight: 70 },     // medium
+      { name: "误触", weight: 40 },       // small
+      { name: "延迟", weight: 40 }        // small
+    ]
+  },
+  { 
+    brand: "蔚来", 
+    color: "#E6A23C",
+    bgColor: "#fff3e0",
+    points: [
+      { name: "卡顿", weight: 100 },      // large
+      { name: "功能局限", weight: 100 },  // large
+      { name: "误唤醒", weight: 70 },     // medium
+      { name: "不够灵敏", weight: 70 },   // medium
+      { name: "响应慢", weight: 40 },     // small
+      { name: "偶尔失败", weight: 40 }    // small
+    ]
+  },
+  { 
+    brand: "小鹏", 
+    color: "#F56C6C",
+    bgColor: "#fce4ec",
+    points: [
+      { name: "耗电快", weight: 100 },    // large
+      { name: "学习成本高", weight: 100 }, // large
+      { name: "不够智能", weight: 70 },   // medium
+      { name: "场景单一", weight: 40 },   // small
+      { name: "反应慢", weight: 40 }      // small
+    ]
+  },
+  { 
+    brand: "理想", 
+    color: "#67C23A",
+    bgColor: "#e8f5e9",
+    points: [
+      { name: "反应慢", weight: 100 },    // large
+      { name: "识别不准", weight: 100 },  // large
+      { name: "不支持连续对话", weight: 70 }, // medium
+      { name: "体验一般", weight: 70 },   // medium
+      { name: "准确率低", weight: 40 }    // small
+    ]
+  },
+  { 
+    brand: "比亚迪", 
+    color: "#FAC858",
+    bgColor: "#fff9c4",
+    points: [
+      { name: "功能简陋", weight: 100 },  // large
+      { name: "交互偏硬", weight: 100 },  // large
+      { name: "经常失灵", weight: 70 },   // medium
+      { name: "识别差", weight: 70 },     // medium
+      { name: "不够流畅", weight: 40 }    // small
+    ]
+  }
+];
 
 const comparisonData = ref([
   {
     feature: "基础唤醒",
-    lantu: "支持",
-    lixiang: "你好，岚图",
-    xiaopeng: "你好，小P",
+    lantu: "你好, 岚图",
+    lixiang: "理想同学",
+    xiaopeng: "你好, 小P",
     wenjie: "小艺小艺",
-    tengshi: "你好，腾势",
+    tengshi: "你好, 腾势",
+    best: "全部达标",
     priority: "高",
   },
   {
     feature: "唤醒成功率",
-    lantu: "支持",
-    lixiang: "95.2%",
-    xiaopeng: "97.3%",
-    wenjie: "96.8%",
+    lantu: "95.2%",
+    lixiang: "97.3%",
+    xiaopeng: "96.8%",
+    wenjie: "96.1%",
     tengshi: "94.5%",
+    best: "理想 L9",
     priority: "高",
   },
   {
-    feature: "平均唤应时间",
-    lantu: "支持",
-    lixiang: "1.1秒",
-    xiaopeng: "0.8秒",
+    feature: "平均响应时间",
+    lantu: "1.1秒",
+    lixiang: "0.8秒",
+    xiaopeng: "0.6秒",
     wenjie: "0.9秒",
     tengshi: "1.3秒",
+    best: "小鹏 G9",
     priority: "中",
   },
   {
@@ -223,34 +386,38 @@ const comparisonData = ref([
     lixiang: "支持",
     xiaopeng: "支持",
     wenjie: "支持",
-    tengshi: "⚠️ 仅支音区",
+    tengshi: "仅三音区", // 修正：仅支音区
+    best: "岚图/理想/小鹏/问界",
     priority: "低",
   },
   {
-    feature: "双音区开发",
+    feature: "双音区并发", // 修正：双音区开发
     lantu: "不支持",
     lixiang: "支持",
     xiaopeng: "支持",
-    wenjie: "⚠️ 有限支持",
+    wenjie: "有限支持",
     tengshi: "不支持",
+    best: "理想/小鹏",
     priority: "低",
   },
   {
     feature: "主驾免唤醒",
-    lantu: "支持(6+播念)",
-    lixiang: "支持(12+播含)",
-    xiaopeng: "支持(15+播含)",
-    wenjie: "支持(10+播含)",
+    lantu: "支持(8个指令)",
+    lixiang: "支持(12个指令)",
+    xiaopeng: "支持(15个指令)",
+    wenjie: "支持(10个指令)",
     tengshi: "不支持",
+    best: "小鹏 G9",
     priority: "高",
   },
   {
     feature: "全车免唤醒",
     lantu: "不支持",
-    lixiang: "支持(6+播合)",
-    xiaopeng: "支持(8+播合)",
+    lixiang: "支持(6个指令)",
+    xiaopeng: "支持(8个指令)",
     wenjie: "不支持",
     tengshi: "不支持",
+    best: "小鹏 G9",
     priority: "中",
   },
   {
@@ -259,13 +426,139 @@ const comparisonData = ref([
     lixiang: "支持(45秒)",
     xiaopeng: "支持(60秒)",
     wenjie: "支持(30秒)",
-    tengshi: "⚠️ 支持(20秒)",
+    tengshi: "支持(20秒)",
+    best: "小鹏 G9",
     priority: "高",
   },
 ]);
 
 const analyzeCompetitor = () => {
+  if (!featureInput.value) {
+    // 允许空输入，或者可以添加提示
+  }
+  
+  loading.value = true;
   console.log("分析竞品:", featureInput.value);
+  
+  // 模拟分析过程
+  setTimeout(() => {
+    loading.value = false;
+    showResults.value = true;
+    
+    // M9 OTA 专题数据覆盖
+    if (featureInput.value && featureInput.value.includes('OTA')) {
+      comparisonData.value = [
+        { feature: "智能驾驶版本", lantu: "V1.3.0", lixiang: "OTA 5.0", xiaopeng: "XOS 4.4", wenjie: "HarmonyOS 4", tengshi: "V1.2", best: "HarmonyOS 4", priority: "高" },
+        { feature: "城市NCA覆盖", lantu: "部分开通", lixiang: "全量推送", xiaopeng: "243城", wenjie: "全国都能开", tengshi: "测试中", best: "全国都能开", priority: "高" },
+        { feature: "智慧大灯交互", lantu: "LED矩阵", lixiang: "LED", xiaopeng: "LED", wenjie: "百万像素光场屏", tengshi: "LED", best: "百万像素光场屏", priority: "中" },
+        { feature: "底盘技术", lantu: "CDC+空悬", lixiang: "魔毯空悬", xiaopeng: "双腔空悬", wenjie: "途灵智能底盘", tengshi: "云辇-C", best: "途灵智能底盘", priority: "High" },
+        { feature: "泊车能力", lantu: "APA自动泊车", lixiang: "代客泊车", xiaopeng: "跨楼层记忆", wenjie: "代客泊车+机械车位", tengshi: "自动泊车", best: "代客泊车+机械车位", priority: "中" }
+      ];
+    }
+
+    // 显示结果后，DOM更新了再初始化图表
+    nextTick(() => {
+      initCharts();
+    });
+  }, 800);
+};
+
+// 创建单个品牌的柱状图
+const createBrandBarChart = (chartElement: HTMLElement | undefined, brandData: typeof painPointsData[0]) => {
+  if (!chartElement) return null;
+  
+  const chartInstance = echarts.init(chartElement);
+  
+  chartInstance.setOption({
+    title: {
+      text: brandData.brand,
+      left: 'center',
+      textStyle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: brandData.color
+      }
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      },
+      formatter: (params: any) => {
+        const data = params[0];
+        return `<strong>${data.name}</strong><br/>权重: ${data.value}`;
+      }
+    },
+    grid: {
+      left: '5%',
+      right: '5%',
+      bottom: '15%',
+      top: '60px',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      data: brandData.points.map(p => p.name),
+      axisLabel: {
+        interval: 0,
+        rotate: 45,
+        fontSize: 11,
+        color: '#606266'
+      }
+    },
+    yAxis: {
+      type: 'value',
+      name: '严重程度',
+      max: 120,
+      axisLabel: {
+        fontSize: 11
+      }
+    },
+    series: [
+      {
+        name: '痛点权重',
+        type: 'bar',
+        data: brandData.points.map(p => ({
+          value: p.weight,
+          itemStyle: {
+            color: brandData.color
+          }
+        })),
+        barWidth: '60%',
+        label: {
+          show: true,
+          position: 'top',
+          fontSize: 11,
+          formatter: (params: any) => {
+            if (params.value >= 100) return '高';
+            if (params.value >= 70) return '中';
+            return '低';
+          }
+        }
+      }
+    ]
+  });
+  
+  return chartInstance;
+};
+
+const initBrandBarCharts = () => {
+  // 清除旧实例
+  chartInstances.forEach(instance => instance?.dispose());
+  chartInstances = [];
+  
+  // 创建5个品牌的柱状图
+  const chart1 = createBrandBarChart(teslaBarChart.value, painPointsData[0]);
+  const chart2 = createBrandBarChart(nioBarChart.value, painPointsData[1]);
+  const chart3 = createBrandBarChart(xiaopengBarChart.value, painPointsData[2]);
+  const chart4 = createBrandBarChart(lixiangBarChart.value, painPointsData[3]);
+  const chart5 = createBrandBarChart(bydBarChart.value, painPointsData[4]);
+  
+  if (chart1) chartInstances.push(chart1);
+  if (chart2) chartInstances.push(chart2);
+  if (chart3) chartInstances.push(chart3);
+  if (chart4) chartInstances.push(chart4);
+  if (chart5) chartInstances.push(chart5);
 };
 
 const initCharts = () => {
@@ -321,7 +614,7 @@ const initCharts = () => {
           type: "pie",
           radius: "60%",
           data: [
-            { value: 28, name: "我方需求声量", itemStyle: { color: "#5470C6" } },
+            { value: 28, name: "岚图", itemStyle: { color: "#5470C6" } },
             { value: 22, name: "特斯拉", itemStyle: { color: "#91CC75" } },
             { value: 19, name: "蔚来", itemStyle: { color: "#FAC858" } },
             { value: 17, name: "小鹏", itemStyle: { color: "#EE6666" } },
@@ -342,12 +635,38 @@ const initCharts = () => {
       ],
     });
   }
+
+  // 品牌柱状图
+  initBrandBarCharts();
 };
 
+// 监听视图模式变化,在切换到柱状图时重新渲染
+watch(viewMode, (newMode) => {
+  if (newMode === 'bar' && showResults.value) { // 只有结果显示了才处理
+    nextTick(() => {
+      initBrandBarCharts();
+    });
+  }
+});
+
+// 窗口大小变化时重绘图表
+window.addEventListener('resize', () => {
+  chartInstances.forEach(instance => instance?.resize());
+});
+
+// 获取导航参数
+const navigationParams = inject('navigationParams') as Ref<any>;
+
+// 监听参数变化
+watch(() => navigationParams?.value, (newVal) => {
+  if (newVal?.topic) {
+    featureInput.value = newVal.topic;
+    analyzeCompetitor();
+  }
+}, { immediate: true });
+
 onMounted(() => {
-  nextTick(() => {
-    initCharts();
-  });
+  // onMounted 逻辑已由 immediate watcher 覆盖，或者可以在此做其他初始化
 });
 </script>
 
@@ -406,5 +725,12 @@ onMounted(() => {
 .word-small {
   font-size: 14px !important;
   color: #909399;
+}
+
+.cell-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 </style>

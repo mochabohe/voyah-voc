@@ -57,7 +57,7 @@
               <el-icon><ChatDotRound /></el-icon>
             </el-avatar>
             <div class="message-content">
-              <div class="message-bubble" v-html="msg.content"></div>
+              <div class="message-bubble" v-html="msg.content" @click="handleMessageClick"></div>
               <div class="message-time">{{ msg.time }}</div>
             </div>
             <el-avatar
@@ -120,10 +120,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from "vue";
+import { ref, nextTick, inject } from "vue";
 
+// 使用 inject 获取导航方法
+const navigate = inject('navigate') as (view: string, params?: any) => void;
 const isOpen = ref(false);
-const unreadCount = ref(0);
+const unreadCount = ref(1); // 有一条新推送
 const inputText = ref("");
 const isTyping = ref(false);
 const messagesContainer = ref<HTMLElement>();
@@ -140,14 +142,88 @@ interface Message {
   time: string;
 }
 
+// 构造竞品推送表格 HTML
+const competitorTableHtml = `
+<div style="font-weight:bold; margin-bottom:8px;">📢 竞品热点推送</div>
+<table style="width:100%; border-collapse:collapse; font-size:12px; text-align:left; white-space:nowrap;">
+  <tr style="background:#f0f2f5; color:#909399;">
+    <th style="padding:4px;">热度</th>
+    <th style="padding:4px;">话题名称</th>
+    <th style="padding:4px; white-space:nowrap;">竞品</th>
+    <th style="padding:4px;">声量</th>
+    <th style="padding:4px;">情感</th>
+  </tr>
+  <tr 
+    style="cursor:pointer; border-bottom:1px solid #ebeef5; transition:background 0.2s;" 
+    data-action="navigate-competitor"
+    data-topic="问界M9 OTA升级"
+    onmouseover="this.style.background='#f0f9eb'" 
+    onmouseout="this.style.background='white'"
+  >
+    <td style="padding:6px; color:#F56C6C;">🔥92</td>
+    <td style="padding:6px; font-weight:bold; color:#409EFF;">问界M9 OTA升级...</td>
+    <td style="padding:6px; white-space:nowrap;">问界</td>
+    <td style="padding:6px;">5.2k</td>
+    <td style="padding:6px; color:#67C23A;">😃85%</td>
+  </tr>
+  <tr style="border-bottom:1px solid #ebeef5;">
+    <td style="padding:6px; color:#F56C6C;">🔥85</td>
+    <td style="padding:6px;">小鹏G9城市NGP...</td>
+    <td style="padding:6px; white-space:nowrap;">小鹏</td>
+    <td style="padding:6px;">3.9k</td>
+    <td style="padding:6px; color:#F56C6C;">😡78%</td>
+  </tr>
+  <tr style="border-bottom:1px solid #ebeef5;">
+    <td style="padding:6px; color:#E6A23C;">🔥78</td>
+    <td style="padding:6px;">问界M7冬季空...</td>
+    <td style="padding:6px; white-space:nowrap;">问界</td>
+    <td style="padding:6px;">2.8k</td>
+    <td style="padding:6px; color:#F56C6C;">😡82%</td>
+  </tr>
+  <tr style="border-bottom:1px solid #ebeef5;">
+    <td style="padding:6px; color:#E6A23C;">🔥72</td>
+    <td style="padding:6px;">腾势D9第三排...</td>
+    <td style="padding:6px; white-space:nowrap;">腾势</td>
+    <td style="padding:6px;">2.3k</td>
+    <td style="padding:6px; color:#F56C6C;">😡65%</td>
+  </tr>
+  <tr>
+    <td style="padding:6px; color:#909399;">🔥68</td>
+    <td style="padding:6px;">特斯拉FSD入华...</td>
+    <td style="padding:6px; white-space:nowrap;">特斯</td>
+    <td style="padding:6px;">4.1k</td>
+    <td style="padding:6px; color:#67C23A;">😃60%</td>
+  </tr>
+</table>
+`;
+
 const messages = ref<Message[]>([
   {
     role: "assistant",
-    content:
-      "您好！我是VOC智能助手，有什么可以帮您?",
+    content: "您好！我是VOC智能助手，有什么可以帮您?",
     time: getCurrentTime(),
   },
+  {
+    role: "assistant",
+    content: competitorTableHtml,
+    time: getCurrentTime(),
+  }
 ]);
+
+const handleMessageClick = (e: MouseEvent) => {
+  const target = (e.target as HTMLElement).closest('[data-action]');
+  if (!target) return;
+  
+  const action = target.getAttribute('data-action');
+  const topic = target.getAttribute('data-topic');
+  
+  if (action === 'navigate-competitor' && topic) {
+    isOpen.value = false; // 关闭聊天窗
+    if (navigate) {
+      navigate('competitor', { topic });
+    }
+  }
+};
 
 const toggleChat = () => {
   isOpen.value = !isOpen.value;
@@ -278,6 +354,7 @@ function getCurrentTime() {
   overflow: hidden;
 }
 
+
 .slide-fade-enter-active,
 .slide-fade-leave-active {
   transition: all 0.3s ease;
@@ -373,6 +450,24 @@ function getCurrentTime() {
   background: #f5f7fa;
 }
 
+/* 滚动条美化 */
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background-color: #cdbcf3; /* 淡紫色 */
+  border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background-color: #b19af0; /* 深一点的紫色 */
+}
+
 .message {
   display: flex;
   gap: 10px;
@@ -400,7 +495,7 @@ function getCurrentTime() {
 }
 
 .message-content {
-  max-width: 70%;
+  max-width: 88%;
 }
 
 .message-bubble {

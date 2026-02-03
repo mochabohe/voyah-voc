@@ -99,44 +99,32 @@
       </template>
 
       <div class="task-list">
-        <div class="task-item">
+        <div 
+          v-for="(task, index) in monitoringTasks" 
+          :key="index" 
+          class="task-item"
+        >
           <div class="task-status">
-            <el-tag type="success" size="small">● 运行中</el-tag>
+            <el-tag 
+              :type="task.status === 'running' ? 'success' : 'info'" 
+              size="small"
+            >
+              {{ task.status === 'running' ? '● 运行中' : '⏸ 已暂停' }}
+            </el-tag>
           </div>
           <div class="task-info">
-            <h4>H56D充电问题监控</h4>
+            <h4>{{ task.name }}</h4>
             <div class="task-meta">
-              <span>频率: 每小时</span>
-              <span>上次检查: 10分钟前</span>
-              <span>触发次数: 3</span>
+              <span>频率: {{ task.frequency }}</span>
+              <span>上次检查: {{ task.lastCheck }}</span>
+              <span>触发次数: {{ task.triggerCount }}</span>
             </div>
           </div>
           <div class="task-actions">
             <el-button-group>
-              <el-button size="small" :icon="Edit" @click="editTask('H56D充电问题监控')" />
-              <el-button size="small" :icon="VideoPause" @click="pauseTask('H56D充电问题监控')" />
-              <el-button size="small" :icon="Delete" @click="deleteTask('H56D充电问题监控')" />
-            </el-button-group>
-          </div>
-        </div>
-
-        <div class="task-item">
-          <div class="task-status">
-            <el-tag type="success" size="small">● 运行中</el-tag>
-          </div>
-          <div class="task-info">
-            <h4>A7车机系统监控</h4>
-            <div class="task-meta">
-              <span>频率: 每小时</span>
-              <span>上次检查: 15分钟前</span>
-              <span>触发次数: 5</span>
-            </div>
-          </div>
-          <div class="task-actions">
-            <el-button-group>
-              <el-button size="small" :icon="Edit" @click="editTask('A7车机系统监控')" />
-              <el-button size="small" :icon="VideoPause" @click="pauseTask('A7车机系统监控')" />
-              <el-button size="small" :icon="Delete" @click="deleteTask('A7车机系统监控')" />
+              <el-button size="small" :icon="Edit" @click="editTask(task.name)" />
+              <el-button size="small" :icon="VideoPause" @click="pauseTask(task.name)" />
+              <el-button size="small" :icon="Delete" @click="deleteTask(task.name)" />
             </el-button-group>
           </div>
         </div>
@@ -237,6 +225,7 @@
           v-for="(rec, index) in recommendedRules" 
           :key="index" 
           class="recommend-item"
+          :class="{ 'selected': selectedRecommendation === rec }"
           @click="selectRecommendation(rec)"
         >
           <div class="recommend-header">
@@ -277,6 +266,24 @@ import {
 const showCreateDialog = ref(false);
 const showRecommendDialog = ref(false);
 const createMethod = ref("natural");
+
+// 监控任务列表
+const monitoringTasks = ref([
+  {
+    name: "H56D充电问题监控",
+    status: "running",
+    frequency: "每小时",
+    lastCheck: "10分钟前",
+    triggerCount: 3
+  },
+  {
+    name: "A7车机系统监控",
+    status: "running",
+    frequency: "每小时",
+    lastCheck: "15分钟前",
+    triggerCount: 5
+  }
+]);
 const naturalLanguage = ref("");
 const selectedRecommendation = ref<any>(null);
 
@@ -410,7 +417,85 @@ const parseNaturalLanguage = () => {
 };
 
 const createRule = () => {
-  ElMessage.success("监控规则已创建");
+  // 表单验证
+  if (createMethod.value === 'form') {
+    // 验证监控对象
+    if (!ruleForm.value.target || ruleForm.value.target.length === 0) {
+      ElMessage.warning('请选择监控对象');
+      return;
+    }
+    
+    // 验证监控指标
+    if (!ruleForm.value.metric) {
+      ElMessage.warning('请选择监控指标');
+      return;
+    }
+    
+    // 验证阈值
+    if (!ruleForm.value.threshold || ruleForm.value.threshold === '') {
+      ElMessage.warning('请输入阈值');
+      return;
+    }
+    
+    // 验证阈值是否为有效数字
+    const thresholdNum = parseFloat(ruleForm.value.threshold);
+    if (isNaN(thresholdNum) || thresholdNum <= 0 || thresholdNum > 100) {
+      ElMessage.warning('请输入1-100之间的有效阈值');
+      return;
+    }
+  } else if (createMethod.value === 'natural') {
+    // 自然语言模式：检查是否已解析
+    if (!naturalLanguage.value.trim()) {
+      ElMessage.warning('请输入监控规则描述');
+      return;
+    }
+    // 检查是否点击了AI解析
+    if (!ruleForm.value.target || ruleForm.value.target.length === 0) {
+      ElMessage.warning('请先点击"AI解析"按钮');
+      return;
+    }
+  }
+  
+  // 构建规则描述（用于显示）
+  const targetDesc = ruleForm.value.target.join(' / ');
+  const metricDesc = ruleForm.value.metric === 'negative_count' ? '负面反馈' : '正面反馈';
+  const conditionDesc = ruleForm.value.condition === 'increase' ? '增长' : '减少';
+  const timeWindowDesc = ruleForm.value.timeWindow === '1d' ? '1天' : 
+                         ruleForm.value.timeWindow === '3d' ? '3天' : 
+                         ruleForm.value.timeWindow === '7d' ? '7天' : '30天';
+  
+  // 生成任务名称
+  const taskName = `${targetDesc} ${metricDesc}监控`;
+  
+  // 添加到任务列表（添加到数组开头）
+  monitoringTasks.value.unshift({
+    name: taskName,
+    status: 'running',
+    frequency: '每小时',
+    lastCheck: '刚刚',
+    triggerCount: 0
+  });
+  
+  // 显示成功消息
+  ElMessage({
+    type: 'success',
+    message: `监控规则已创建！\n监控对象: ${targetDesc}\n触发条件: ${metricDesc}${timeWindowDesc}内${conditionDesc}超过${ruleForm.value.threshold}%`,
+    duration: 3000,
+    showClose: true
+  });
+  
+  // 重置表单
+  ruleForm.value = {
+    target: [],
+    metric: "",
+    timeWindow: "3d",
+    condition: "increase",
+    threshold: "20",
+  };
+  naturalLanguage.value = "";
+  createMethod.value = "natural";
+  
+  // 关闭对话框
   showCreateDialog.value = false;
 };
 
@@ -440,6 +525,11 @@ const deleteTask = (taskName: string) => {
     }
   )
     .then(() => {
+      // 从任务列表中删除
+      const index = monitoringTasks.value.findIndex(task => task.name === taskName);
+      if (index !== -1) {
+        monitoringTasks.value.splice(index, 1);
+      }
       ElMessage.success(`任务"${taskName}"已删除`);
     })
     .catch(() => {
@@ -616,6 +706,7 @@ const createFromRecommendation = () => {
 }
 
 .recommend-item {
+  position: relative;
   padding: 16px;
   border: 2px solid #E4E7ED;
   border-radius: 8px;
@@ -628,6 +719,30 @@ const createFromRecommendation = () => {
   background: #f0f9ff;
   transform: translateX(4px);
 }
+
+.recommend-item.selected {
+  border-color: #409EFF;
+  background: #ecf5ff;
+  box-shadow: 0 2px 12px rgba(64, 158, 255, 0.3);
+}
+
+.recommend-item.selected::before {
+  content: '✓';
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 24px;
+  height: 24px;
+  background: #409EFF;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+
 
 .recommend-header {
   display: flex;

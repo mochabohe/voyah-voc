@@ -9,7 +9,7 @@
       },
       {
         "name": "H77扶手屏不亮",
-        "data": [18, 28, 42, 69, 89],
+        "data": [18, 28, 38, 56, 74],
         "color": "#E6A23C"
       },
       {
@@ -26,19 +26,19 @@
   ],
   "hotIssues": {
     "all": [
-      { "name": "H56D充电慢", "count": 156, "trend": "+20%", "description": "用户反馈充电问题，影响使用体验" },
-      { "name": "H77扶手屏不亮", "count": 89, "trend": "+10%", "description": "扶手屏显示异常问题，需要重视" },
-      { "name": "H37尾灯有水雾", "count": 67, "trend": "+5%", "description": "尾灯内部出现水雾，影响照明效果" },
-      { "name": "H56C车机卡顿", "count": 58, "trend": "+15%", "description": "车机系统响应慢，用户体验差" },
-      { "name": "H77空调制冷慢", "count": 52, "trend": "+8%", "description": "空调制冷效果不佳，夏季使用不便" },
-      { "name": "H37语音识别差", "count": 45, "trend": "+12%", "description": "语音助手识别率低，误操作频繁" },
-      { "name": "H56D续航偏短", "count": 39, "trend": "+6%", "description": "实际续航与标称不符，里程焦虑" },
+      { "name": "H56D充电慢", "count": 156, "trend": "+20%", "description": "用户反馈充电问题,影响使用体验" },
+      { "name": "H77扶手屏不亮", "count": 74, "trend": "+10%", "description": "扶手屏显示异常问题,需要重视" },
+      { "name": "H37尾灯有水雾", "count": 67, "trend": "+5%", "description": "尾灯内部出现水雾,影响照明效果" },
+      { "name": "H56C车机卡顿", "count": 58, "trend": "+15%", "description": "车机系统响应慢,用户体验差" },
+      { "name": "H77空调制冷慢", "count": 52, "trend": "+8%", "description": "空调制冷效果不佳,夏季使用不便" },
+      { "name": "H37语音识别差", "count": 45, "trend": "+12%", "description": "语音助手识别率低,误操作频繁" },
+      { "name": "H56D续航偏短", "count": 39, "trend": "+6%", "description": "实际续航与标称不符,里程焦虑" },
       { "name": "H77座椅异响", "count": 33, "trend": "+9%", "description": "前排座椅调节时有异响" },
-      { "name": "H37导航不准", "count": 28, "trend": "+4%", "description": "导航定位偏移，路线规划不合理" }
+      { "name": "H37导航不准", "count": 28, "trend": "+4%", "description": "导航定位偏移,路线规划不合理" }
     ],
     "public": [
       { "name": "H56D充电慢", "count": 98, "trend": "+15%", "description": "懂车帝、汽车之家用户反馈充电问题" },
-      { "name": "H77扶手屏不亮", "count": 56, "trend": "+8%", "description": "小红书、抖音用户反馈屏幕问题" },
+      { "name": "H77扶手屏不亮", "count": 24, "trend": "+8%", "description": "小红书、抖音用户反馈屏幕问题" },
       { "name": "H37续航不足", "count": 43, "trend": "+12%", "description": "公域平台用户反馈续航问题" },
       { "name": "H56C智能驾驶误报", "count": 38, "trend": "+18%", "description": "论坛用户反馈辅助驾驶频繁误报" },
       { "name": "H77胎压监测故障", "count": 32, "trend": "+6%", "description": "社交媒体反馈胎压传感器异常" },
@@ -49,7 +49,7 @@
     ],
     "private": [
       { "name": "H56D充电慢", "count": 58, "trend": "+25%", "description": "APP、客服系统反馈充电问题" },
-      { "name": "H77扶手屏不亮", "count": 33, "trend": "+12%", "description": "400电话、4S店反馈屏幕问题" },
+      { "name": "H77扶手屏不亮", "count": 50, "trend": "+12%", "description": "400电话、4S店反馈屏幕问题" },
       { "name": "H37尾灯有水雾", "count": 24, "trend": "+8%", "description": "私域渠道反馈尾灯问题" },
       { "name": "H56C车机卡顿", "count": 20, "trend": "+22%", "description": "官方APP用户反馈系统响应慢" },
       { "name": "H77空调异味", "count": 19, "trend": "+14%", "description": "客服系统收到空调异味投诉" },
@@ -93,7 +93,7 @@
       "model": "H97F",
       "type": "硬件故障",
       "emotion": "负面",
-      "source": "4S店",
+      "source": "小红书",
       "time": "2024-05-25"
     },
     {
@@ -111,7 +111,7 @@
       "model": "H37A",
       "type": "功能优化",
       "emotion": "中性",
-      "source": "社交媒体",
+      "source": "抖音",
       "time": "2024-05-23"
     },
     {

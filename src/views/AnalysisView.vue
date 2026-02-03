@@ -72,8 +72,8 @@
             <el-checkbox label="CC" />
             <el-checkbox label="APP" />
             <el-checkbox label="质检" />
-            <el-checkbox label="4S店" />
-            <el-checkbox label="社交媒体" />
+            <el-checkbox label="小红书" />
+            <el-checkbox label="抖音" />
           </el-checkbox-group>
         </el-form-item>
         <el-form-item>
@@ -149,8 +149,8 @@ const selectedSources = ref<string[]>([
   "CC",
   "APP",
   "质检",
-  "4S店",
-  "社交媒体",
+  "小红书",
+  "抖音",
 ]);
 
 // Mock 数据
@@ -182,7 +182,7 @@ const resetFilters = () => {
   selectedType.value = "";
   selectedComponent.value = "";
   selectedEmotions.value = ["正面", "负面", "中性"];
-  selectedSources.value = ["CC", "APP", "质检", "4S店", "社交媒体"];
+  selectedSources.value = ["CC", "APP", "质检", "小红书", "抖音"];
 };
 
 const initCharts = () => {

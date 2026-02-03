@@ -94,21 +94,28 @@
           <div class="chapter">
             <h2 class="chapter-title">
               <el-icon><Document /></el-icon>
-              第二章：用户价值分析
+              {{ reportData.chapters[1].title }}
             </h2>
             
-            <!-- 2.1 需求声量分析 -->
+            <!-- 2.1 需求声量与趋势 -->
             <div class="section">
-              <h3 class="section-subtitle">2.1 需求声量分析</h3>
+              <h3 class="section-subtitle">{{ reportData.chapters[1].sections[0].subtitle }}</h3>
               <div class="section-content" v-html="formatContent(reportData.chapters[1].sections[0].content)"></div>
               <div class="chart-container">
-                <div ref="volumeTrendChart" style="height: 350px;"></div>
+                <el-row :gutter="16">
+                   <el-col :span="12">
+                      <div ref="volumeTrendChart" style="height: 350px;"></div>
+                   </el-col>
+                   <el-col :span="12">
+                      <div ref="sourceChart" style="height: 350px;"></div>
+                   </el-col>
+                </el-row>
               </div>
             </div>
 
-            <!-- 2.2 用户情感与诉求分析 -->
+            <!-- 2.2 用户画像与痛点 -->
             <div class="section">
-              <h3 class="section-subtitle">2.2 用户情感与诉求分析</h3>
+              <h3 class="section-subtitle">{{ reportData.chapters[1].sections[1].subtitle }}</h3>
               <div class="section-content" v-html="formatContent(reportData.chapters[1].sections[1].content)"></div>
               <div class="chart-container">
                 <el-row :gutter="16">
@@ -116,26 +123,7 @@
                     <div ref="sentimentChart" style="height: 300px;"></div>
                   </el-col>
                   <el-col :span="12">
-                    <div ref="sourceChart" style="height: 300px;"></div>
-                  </el-col>
-                </el-row>
-              </div>
-            </div>
-
-            <!-- 2.3 目标用户画像 -->
-            <div class="section">
-              <h3 class="section-subtitle">2.3 目标用户画像</h3>
-              <div class="section-content" v-html="formatContent(reportData.chapters[1].sections[2].content)"></div>
-              <div class="chart-container">
-                <el-row :gutter="16">
-                  <el-col :span="8">
-                    <div ref="ageChart" style="height: 280px;"></div>
-                  </el-col>
-                  <el-col :span="8">
-                    <div ref="incomeChart" style="height: 280px;"></div>
-                  </el-col>
-                  <el-col :span="8">
-                    <div ref="regionChart" style="height: 280px;"></div>
+                    <div ref="ageChart" style="height: 300px;"></div>
                   </el-col>
                 </el-row>
               </div>
@@ -146,27 +134,27 @@
           <div class="chapter">
             <h2 class="chapter-title">
               <el-icon><Document /></el-icon>
-              第三章：市场竞争分析
+              {{ reportData.chapters[2].title }}
             </h2>
             
-            <!-- 3.1 竞品功能对标矩阵 -->
+            <!-- 3.1 -->
             <div class="section">
-              <h3 class="section-subtitle">3.1 竞品功能对标矩阵</h3>
+              <h3 class="section-subtitle">{{ reportData.chapters[2].sections[0].subtitle }}</h3>
               <div class="section-content" v-html="formatContent(reportData.chapters[2].sections[0].content)"></div>
             </div>
 
-            <!-- 3.2 竞品用户口碑分析 -->
+            <!-- 3.2 -->
             <div class="section">
-              <h3 class="section-subtitle">3.2 竞品用户口碑分析</h3>
+              <h3 class="section-subtitle">{{ reportData.chapters[2].sections[1].subtitle }}</h3>
               <div class="section-content" v-html="formatContent(reportData.chapters[2].sections[1].content)"></div>
               <div class="chart-container">
                 <div ref="competitorRadarChart" style="height: 400px;"></div>
               </div>
             </div>
 
-            <!-- 3.3 市场机会点分析 -->
+            <!-- 3.3 (Optional) -->
             <div v-if="reportData.chapters[2].sections[2]" class="section">
-              <h3 class="section-subtitle">3.3 市场机会点分析</h3>
+              <h3 class="section-subtitle">{{ reportData.chapters[2].sections[2].subtitle }}</h3>
               <div class="section-content" v-html="formatContent(reportData.chapters[2].sections[2].content)"></div>
             </div>
           </div>
@@ -681,6 +669,11 @@ const generateReport = () => {
   reportGenerated.value = false
   generatingProgress.value = 0
   animatedScore.value = 0
+  
+  // 动态更新标题，自动添加后缀
+  reportData.value.title = userInput.value.endsWith('可行性评估报告') 
+    ? userInput.value 
+    : `${userInput.value}可行性评估报告`;
 
   // 模拟进度
   const progressInterval = setInterval(() => {
@@ -737,7 +730,7 @@ const initCharts = () => {
   if (volumeTrendChart.value) {
     const chart = echarts.init(volumeTrendChart.value)
     chart.setOption({
-      title: { text: '近90天声量趋势', left: 'center' },
+      title: { text: '近90天“音响系统”声量趋势', left: 'center' },
       tooltip: { trigger: 'axis' },
       xAxis: {
         type: 'category',
@@ -745,11 +738,12 @@ const initCharts = () => {
       },
       yAxis: { type: 'value', name: '讨论量' },
       series: [{
-        data: [120, 150, 180, 220, 260, 310, 380, 450, 520, 580, 630, 680],
+        data: [150, 165, 180, 200, 240, 290, 350, 420, 500, 580, 650, 720],
         type: 'line',
         smooth: true,
         areaStyle: { color: 'rgba(102, 126, 234, 0.1)' },
-        itemStyle: { color: '#667EEA' }
+        itemStyle: { color: '#667EEA' },
+        name: '音响话题声量'
       }]
     })
   }
@@ -758,15 +752,15 @@ const initCharts = () => {
   if (sentimentChart.value) {
     const chart = echarts.init(sentimentChart.value)
     chart.setOption({
-      title: { text: '情感分布', left: 'center' },
+      title: { text: '用户评价情感分布', left: 'center' },
       tooltip: { trigger: 'item' },
       series: [{
         type: 'pie',
         radius: '60%',
         data: [
-          { value: 58, name: '正面期待', itemStyle: { color: '#67C23A' } },
-          { value: 32, name: '中性反馈', itemStyle: { color: '#909399' } },
-          { value: 10, name: '负面吐槽', itemStyle: { color: '#F56C6C' } }
+          { value: 45, name: '期待升级', itemStyle: { color: '#67C23A' } },
+          { value: 35, name: '不满原车', itemStyle: { color: '#F56C6C' } },
+          { value: 20, name: '观望/中性', itemStyle: { color: '#909399' } }
         ],
         label: { formatter: '{b}\n{d}%' }
       }]
@@ -783,10 +777,10 @@ const initCharts = () => {
         type: 'pie',
         radius: ['40%', '70%'],
         data: [
-          { value: 45, name: '社交媒体', itemStyle: { color: '#409EFF' } },
-          { value: 30, name: '汽车论坛', itemStyle: { color: '#E6A23C' } },
-          { value: 15, name: 'APP社区', itemStyle: { color: '#67C23A' } },
-          { value: 10, name: '客服系统', itemStyle: { color: '#909399' } }
+          { value: 55, name: '汽车垂直社区', itemStyle: { color: '#E6A23C' } },
+          { value: 25, name: '社交媒体(抖音/红书)', itemStyle: { color: '#409EFF' } },
+          { value: 15, name: '车主群/论坛', itemStyle: { color: '#67C23A' } },
+          { value: 5, name: '客服/其他', itemStyle: { color: '#909399' } }
         ],
         label: { formatter: '{b}\n{d}%' }
       }]
@@ -797,14 +791,15 @@ const initCharts = () => {
   if (ageChart.value) {
     const chart = echarts.init(ageChart.value)
     chart.setOption({
-      title: { text: '年龄分布', left: 'center' },
+      title: { text: '关注用户年龄', left: 'center' },
       tooltip: {},
-      xAxis: { type: 'category', data: ['25-30', '31-35', '36-40', '41-45', '46+'] },
+      xAxis: { type: 'category', data: ['<25', '25-30', '30-40', '40+'] },
       yAxis: { type: 'value', name: '占比%' },
       series: [{
-        data: [15, 28, 35, 18, 4],
+        data: [10, 20, 55, 15],
         type: 'bar',
-        itemStyle: { color: '#5470C6' }
+        itemStyle: { color: '#5470C6' },
+        name: '用户占比'
       }]
     })
   }
@@ -845,34 +840,42 @@ const initCharts = () => {
     })
   }
 
-  // 7. 竞品满意度雷达图
+  // 7. 竞品听感对比雷达图
   if (competitorRadarChart.value) {
     const chart = echarts.init(competitorRadarChart.value)
     chart.setOption({
-      title: { text: '竞品满意度对比', left: 'center' },
-      tooltip: {},
-      legend: { data: ['特斯拉', '蔚来', '小鹏', '理想', '比亚迪'], bottom: 0 },
+      title: { text: '竞品听感维度实测对比', left: 'center' },
+      legend: { bottom: 0 },
       radar: {
         indicator: [
-          { name: '易用性', max: 5 },
-          { name: '稳定性', max: 5 },
-          { name: '创新性', max: 5 },
-          { name: '智能度', max: 5 },
-          { name: '满意度', max: 5 }
+          { name: '高音解析', max: 5 },
+          { name: '中频人声', max: 5 },
+          { name: '低音下潜', max: 5 },
+          { name: '声场广度', max: 5 },
+          { name: '环绕沉浸', max: 5 }
         ]
       },
       series: [{
+        name: '听感评分',
         type: 'radar',
         data: [
-          { value: [3.8, 4.1, 3.9, 3.7, 3.7], name: '特斯拉' },
-          { value: [4.2, 4.1, 4.3, 4.0, 4.0], name: '蔚来' },
-          { value: [4.0, 3.9, 4.1, 3.9, 3.8], name: '小鹏' },
-          { value: [3.5, 3.4, 3.3, 3.2, 3.5], name: '理想' },
-          { value: [3.0, 3.2, 3.1, 2.9, 3.3], name: '比亚迪' }
+           {
+            value: [4.2, 4.5, 4.0, 3.8, 4.0],
+            name: '我方8单元(预期)',
+            itemStyle: { color: '#409EFF' },
+            areaStyle: { opacity: 0.3 }
+          },
+          {
+            value: [3.8, 3.5, 4.2, 4.2, 4.2],
+            name: '竞品14单元(均值)',
+            itemStyle: { color: '#E6A23C' },
+            areaStyle: { opacity: 0.3 }
+          }
         ]
-      }]
+      }] 
     })
   }
+
 }
 </script>
 

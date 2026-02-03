@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, provide } from "vue";
 import MainLayout from "./components/layout/MainLayout.vue";
 import HomeView from "./views/HomeView.vue";
 import AnalysisView from "./views/AnalysisView.vue";
@@ -10,12 +10,19 @@ import CompetitorView from "./views/CompetitorView.vue";
 import ChatBot from "./components/ChatBot.vue";
 
 const layoutRef = ref();
+const currentParams = ref<any>({});
 
-const handleNavigate = (view: string) => {
+const handleNavigate = (view: string, params?: any) => {
   if (layoutRef.value) {
     layoutRef.value.currentView = view;
   }
+  if (params) {
+    currentParams.value = params;
+  }
 };
+
+provide('navigate', handleNavigate);
+provide('navigationParams', currentParams);
 </script>
 
 <template>

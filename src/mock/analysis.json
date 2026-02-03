@@ -1,0 +1,136 @@
+{
+  "trendData": {
+    "dates": ["5/1", "5/8", "5/15", "5/22", "5/28"],
+    "series": [
+      {
+        "name": "H56D充电慢",
+        "data": [32, 48, 61, 84, 156],
+        "color": "#409EFF"
+      },
+      {
+        "name": "H77扶手屏不亮",
+        "data": [18, 28, 42, 69, 89],
+        "color": "#E6A23C"
+      },
+      {
+        "name": "H37尾灯有水雾",
+        "data": [15, 22, 32, 47, 67],
+        "color": "#67C23A"
+      }
+    ]
+  },
+  "emotionData": [
+    { "name": "正面", "value": 20, "color": "#67C23A" },
+    { "name": "负面", "value": 50, "color": "#F56C6C" },
+    { "name": "中性", "value": 30, "color": "#909399" }
+  ],
+  "hotIssues": {
+    "all": [
+      { "name": "H56D充电慢", "count": 156, "trend": "+20%", "description": "用户反馈充电问题，影响使用体验" },
+      { "name": "H77扶手屏不亮", "count": 89, "trend": "+10%", "description": "扶手屏显示异常问题，需要重视" },
+      { "name": "H37尾灯有水雾", "count": 67, "trend": "+5%", "description": "尾灯内部出现水雾，影响照明效果" },
+      { "name": "H56C车机卡顿", "count": 58, "trend": "+15%", "description": "车机系统响应慢，用户体验差" },
+      { "name": "H77空调制冷慢", "count": 52, "trend": "+8%", "description": "空调制冷效果不佳，夏季使用不便" },
+      { "name": "H37语音识别差", "count": 45, "trend": "+12%", "description": "语音助手识别率低，误操作频繁" },
+      { "name": "H56D续航偏短", "count": 39, "trend": "+6%", "description": "实际续航与标称不符，里程焦虑" },
+      { "name": "H77座椅异响", "count": 33, "trend": "+9%", "description": "前排座椅调节时有异响" },
+      { "name": "H37导航不准", "count": 28, "trend": "+4%", "description": "导航定位偏移，路线规划不合理" }
+    ],
+    "public": [
+      { "name": "H56D充电慢", "count": 98, "trend": "+15%", "description": "懂车帝、汽车之家用户反馈充电问题" },
+      { "name": "H77扶手屏不亮", "count": 56, "trend": "+8%", "description": "小红书、抖音用户反馈屏幕问题" },
+      { "name": "H37续航不足", "count": 43, "trend": "+12%", "description": "公域平台用户反馈续航问题" },
+      { "name": "H56C智能驾驶误报", "count": 38, "trend": "+18%", "description": "论坛用户反馈辅助驾驶频繁误报" },
+      { "name": "H77胎压监测故障", "count": 32, "trend": "+6%", "description": "社交媒体反馈胎压传感器异常" },
+      { "name": "H37车窗异响", "count": 29, "trend": "+10%", "description": "懂车帝用户反馈车窗升降异响" },
+      { "name": "H56D刹车偏软", "count": 25, "trend": "+7%", "description": "汽车之家用户反馈刹车脚感问题" },
+      { "name": "H77蓝牙连接不稳", "count": 21, "trend": "+5%", "description": "小红书用户反馈手机连接问题" },
+      { "name": "H37雨刮器刮不净", "count": 18, "trend": "+3%", "description": "公域平台反馈雨天视线受阻" }
+    ],
+    "private": [
+      { "name": "H56D充电慢", "count": 58, "trend": "+25%", "description": "APP、客服系统反馈充电问题" },
+      { "name": "H77扶手屏不亮", "count": 33, "trend": "+12%", "description": "400电话、4S店反馈屏幕问题" },
+      { "name": "H37尾灯有水雾", "count": 24, "trend": "+8%", "description": "私域渠道反馈尾灯问题" },
+      { "name": "H56C车机卡顿", "count": 20, "trend": "+22%", "description": "官方APP用户反馈系统响应慢" },
+      { "name": "H77空调异味", "count": 19, "trend": "+14%", "description": "客服系统收到空调异味投诉" },
+      { "name": "H37座椅加热慢", "count": 16, "trend": "+10%", "description": "4S店反馈座椅加热功能问题" },
+      { "name": "H56D OTA升级失败", "count": 14, "trend": "+16%", "description": "APP反馈远程升级失败" },
+      { "name": "H77后备箱开启迟缓", "count": 12, "trend": "+9%", "description": "400电话反馈电动尾门故障" },
+      { "name": "H37钥匙感应差", "count": 10, "trend": "+6%", "description": "私域渠道反馈无钥匙进入失灵" }
+    ]
+  },
+  "issueList": [
+    {
+      "id": "USER001",
+      "content": "H56D充电速度慢，需要2小时才能充满",
+      "model": "H56D",
+      "type": "硬件故障",
+      "emotion": "负面",
+      "source": "APP",
+      "time": "2024-05-28"
+    },
+    {
+      "id": "USER002",
+      "content": "H56C车机系统卡顿，反应慢",
+      "model": "H56C",
+      "type": "软件故障",
+      "emotion": "负面",
+      "source": "CC",
+      "time": "2024-05-27"
+    },
+    {
+      "id": "USER003",
+      "content": "H97D希望增加自动泊车功能",
+      "model": "H97D",
+      "type": "新增功能",
+      "emotion": "正面",
+      "source": "APP",
+      "time": "2024-05-26"
+    },
+    {
+      "id": "USER004",
+      "content": "H97F电池续航里程不足",
+      "model": "H97F",
+      "type": "硬件故障",
+      "emotion": "负面",
+      "source": "4S店",
+      "time": "2024-05-25"
+    },
+    {
+      "id": "USER005",
+      "content": "H77A充电接口松动",
+      "model": "H77A",
+      "type": "硬件故障",
+      "emotion": "中性",
+      "source": "质检",
+      "time": "2024-05-24"
+    },
+    {
+      "id": "USER006",
+      "content": "H37A希望优化空调制冷效果",
+      "model": "H37A",
+      "type": "功能优化",
+      "emotion": "中性",
+      "source": "社交媒体",
+      "time": "2024-05-23"
+    },
+    {
+      "id": "USER007",
+      "content": "H37B刹车时有异响",
+      "model": "H37B",
+      "type": "硬件故障",
+      "emotion": "负面",
+      "source": "APP",
+      "time": "2024-05-22"
+    },
+    {
+      "id": "USER008",
+      "content": "H56D希望增加无线充电功能",
+      "model": "H56D",
+      "type": "新增功能",
+      "emotion": "正面",
+      "source": "CC",
+      "time": "2024-05-21"
+    }
+  ]
+}

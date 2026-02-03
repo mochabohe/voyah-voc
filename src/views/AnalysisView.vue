@@ -192,8 +192,36 @@ const initCharts = () => {
   }
 };
 
-// 页面加载时初始化图表
+// 页面加载时初始化图表和处理传入的问题
 onMounted(() => {
+  // 检查是否有从首页传来的问题信息
+  const selectedIssueStr = localStorage.getItem('selectedIssue');
+  if (selectedIssueStr) {
+    try {
+      const selectedIssue = JSON.parse(selectedIssueStr);
+      console.log('接收到从首页传来的问题:', selectedIssue);
+      
+      // 根据问题名称设置筛选条件
+      // 从问题名称中提取车型信息 (如 "H56D充电慢" -> "H56D")
+      const modelMatch = selectedIssue.name.match(/^(H\d+[A-Z]?)/);
+      if (modelMatch) {
+        selectedModel.value = modelMatch[1];
+      }
+      
+      // 将问题名称设置到部件输入框
+      const componentName = selectedIssue.name.replace(/^H\d+[A-Z]?/, ''); // 去掉车型前缀
+      selectedComponent.value = componentName;
+      
+      // 清除 localStorage 中的数据，避免重复使用
+      localStorage.removeItem('selectedIssue');
+      
+      // 触发筛选
+      applyFilters();
+    } catch (e) {
+      console.error('解析问题信息失败:', e);
+    }
+  }
+  
   nextTick(() => {
     initCharts();
   });

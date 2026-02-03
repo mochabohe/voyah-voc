@@ -18,6 +18,7 @@
               v-for="(issue, index) in mockData.hotIssues.all"
               :key="index"
               class="hot-issue-item"
+              @click="handleIssueClick(issue)"
             >
               <div class="issue-name">{{ issue.name }}</div>
               <div class="issue-stats">
@@ -41,6 +42,7 @@
               v-for="(issue, index) in mockData.hotIssues.public"
               :key="index"
               class="hot-issue-item"
+              @click="handleIssueClick(issue)"
             >
               <div class="issue-name">{{ issue.name }}</div>
               <div class="issue-stats">
@@ -64,6 +66,7 @@
               v-for="(issue, index) in mockData.hotIssues.private"
               :key="index"
               class="hot-issue-item"
+              @click="handleIssueClick(issue)"
             >
               <div class="issue-name">{{ issue.name }}</div>
               <div class="issue-stats">
@@ -340,6 +343,19 @@ const handleCardClick = (requirementName: string) => {
   emit('navigate', 'voice-detection');
   // 可以在这里存储选中的需求名称到localStorage或store
   localStorage.setItem('selectedRequirement', requirementName);
+};
+
+// 处理热门问题卡片点击
+const handleIssueClick = (issue: any) => {
+  // 跳转到智能分析页面
+  emit('navigate', 'analysis');
+  // 存储选中的问题信息到localStorage，供分析页面使用
+  localStorage.setItem('selectedIssue', JSON.stringify({
+    name: issue.name,
+    count: issue.count,
+    trend: issue.trend,
+    description: issue.description
+  }));
 };
 </script>
 

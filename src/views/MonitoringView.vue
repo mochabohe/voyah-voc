@@ -78,14 +78,23 @@
             <el-icon><List /></el-icon>
             <span>监控任务列表</span>
           </div>
-          <el-button
-            type="primary"
-            size="small"
-            @click="showCreateDialog = true"
-          >
-            <el-icon><Plus /></el-icon>
-            创建监控规则
-          </el-button>
+          <div style="display: flex; gap: 10px;">
+            <el-button
+              size="small"
+              @click="showRecommendDialog = true"
+            >
+              <el-icon><MagicStick /></el-icon>
+              智能推荐
+            </el-button>
+            <el-button
+              type="primary"
+              size="small"
+              @click="showCreateDialog = true"
+            >
+              <el-icon><Plus /></el-icon>
+              创建监控规则
+            </el-button>
+          </div>
         </div>
       </template>
 
@@ -212,6 +221,44 @@
         </el-button>
       </template>
     </el-dialog>
+
+    <!-- 智能推荐对话框 -->
+    <el-dialog v-model="showRecommendDialog" title="智能推荐监控规则" width="800px">
+      <div style="margin-bottom: 20px; padding: 15px; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #409EFF;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+          <el-icon color="#409EFF" :size="20"><MagicStick /></el-icon>
+          <span style="font-weight: 600; color: #409EFF;">AI智能分析中...</span>
+        </div>
+        <p style="margin: 0; font-size: 14px; color: #606266;">基于近30天VOC数据，为您推荐以下高价值监控规则</p>
+      </div>
+
+      <div class="recommend-list">
+        <div 
+          v-for="(rec, index) in recommendedRules" 
+          :key="index" 
+          class="recommend-item"
+          @click="selectRecommendation(rec)"
+        >
+          <div class="recommend-header">
+            <el-tag :type="rec.priority === '高' ? 'danger' : rec.priority === '中' ? 'warning' : 'info'" size="small">
+              {{ rec.priority }}优先级
+            </el-tag>
+            <span class="recommend-title">{{ rec.title }}</span>
+          </div>
+          <div class="recommend-desc">{{ rec.description }}</div>
+          <div class="recommend-stats">
+            <span>📊 近期声量: <strong>{{ rec.volume }}</strong></span>
+            <span>📈 增长趋势: <strong style="color: #F56C6C;">{{ rec.trend }}</strong></span>
+            <span>⚠️ 风险等级: <strong>{{ rec.risk }}</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <template #footer>
+        <el-button @click="showRecommendDialog = false">关闭</el-button>
+        <el-button type="primary" @click="createFromRecommendation">应用选中规则</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -228,8 +275,59 @@ import {
 } from "@element-plus/icons-vue";
 
 const showCreateDialog = ref(false);
+const showRecommendDialog = ref(false);
 const createMethod = ref("natural");
 const naturalLanguage = ref("");
+const selectedRecommendation = ref<any>(null);
+
+// 智能推荐的监控规则列表
+const recommendedRules = ref([
+  {
+    priority: '高',
+    title: 'H56D充电慢问题监控',
+    description: '近7天负面反馈增长42%，建议立即监控',
+    volume: '156次',
+    trend: '+42%',
+    risk: '高',
+    config: {
+      target: ['梦想家', 'H56D'],
+      metric: 'negative_count',
+      timeWindow: '3d',
+      condition: 'increase',
+      threshold: '20'
+    }
+  },
+  {
+    priority: '中',
+    title: 'H77扶手屏异常监控',
+    description: '用户反馈量稳定上升，建议关注',
+    volume: '89次',
+    trend: '+10%',
+    risk: '中',
+    config: {
+      target: ['秦山', 'H77A'],
+      metric: 'negative_count',
+      timeWindow: '7d',
+      condition: 'increase',
+      threshold: '15'
+    }
+  },
+  {
+    priority: '中',
+    title: 'H37尾灯水雾问题',
+    description: '季节性问题，建议持续监控',
+    volume: '67次',
+    trend: '+5%',
+    risk: '中',
+    config: {
+      target: ['知音', 'H37A'],
+      metric: 'negative_count',
+      timeWindow: '7d',
+      condition: 'increase',
+      threshold: '10'
+    }
+  }
+]);
 
 // 车型级联选择器配置
 const carModelOptions = ref([
@@ -347,6 +445,30 @@ const deleteTask = (taskName: string) => {
     .catch(() => {
       ElMessage.info("已取消删除");
     });
+};
+
+// 选择推荐的监控规则
+const selectRecommendation = (rec: any) => {
+  selectedRecommendation.value = rec;
+  // 可以添加视觉反馈
+};
+
+// 从推荐创建监控规则
+const createFromRecommendation = () => {
+  if (!selectedRecommendation.value) {
+    ElMessage.warning('请先选择一个推荐规则');
+    return;
+  }
+  
+  // 填充表单数据
+  ruleForm.value = selectedRecommendation.value.config;
+  
+  // 关闭推荐对话框，打开创建对话框
+  showRecommendDialog.value = false;
+  showCreateDialog.value = true;
+  createMethod.value = 'form';
+  
+  ElMessage.success('已加载推荐规则，请确认后保存');
 };
 </script>
 
@@ -482,5 +604,65 @@ const deleteTask = (taskName: string) => {
 
 .natural-input {
   padding: 10px 0;
+}
+
+/* 智能推荐样式 */
+.recommend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.recommend-item {
+  padding: 16px;
+  border: 2px solid #E4E7ED;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.recommend-item:hover {
+  border-color: #409EFF;
+  background: #f0f9ff;
+  transform: translateX(4px);
+}
+
+.recommend-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.recommend-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.recommend-desc {
+  font-size: 14px;
+  color: #606266;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.recommend-stats {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+  color: #909399;
+}
+
+.recommend-stats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.recommend-stats strong {
+  color: #303133;
 }
 </style>

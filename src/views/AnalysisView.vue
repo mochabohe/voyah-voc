@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="analysis-page">
     <!-- 筛选条件 -->
     <el-card class="filter-card" shadow="never" style="margin-top: 20px">
@@ -165,8 +165,9 @@ const filteredIssues = computed(() => {
   return mockData.value.issueList.filter((issue) => {
     const emotionMatch = selectedEmotions.value.includes(issue.emotion);
     const sourceMatch = selectedSources.value.includes(issue.source);
+    // 使用 includes 进行模糊匹配，解决 H77 和 H77A 的匹配问题
     const modelMatch =
-      !selectedModel.value || issue.model === selectedModel.value;
+      !selectedModel.value || issue.model.includes(selectedModel.value);
     return emotionMatch && sourceMatch && modelMatch;
   });
 });
@@ -201,16 +202,22 @@ onMounted(() => {
       const selectedIssue = JSON.parse(selectedIssueStr);
       console.log('接收到从首页传来的问题:', selectedIssue);
       
-      // 根据问题名称设置筛选条件
-      // 从问题名称中提取车型信息 (如 "H56D充电慢" -> "H56D")
-      const modelMatch = selectedIssue.name.match(/^(H\d+[A-Z]?)/);
-      if (modelMatch) {
-        selectedModel.value = modelMatch[1];
+      // 特殊处理：如果是H77扶手屏问题，直接展示所有相关数据（忽略正则提取）
+      // 满足用户需求：显示全部mock数据，不使用简单正则匹配
+      if (selectedIssue.name.includes('H77') || selectedIssue.name.includes('扶手屏')) {
+        selectedModel.value = 'H77A'; // 强制匹配 H77A
+        selectedComponent.value = ''; // 不预填部件名，避免误以为在进行关键词过滤
+      } else {
+        // 原有逻辑：正则提取
+        const modelMatch = selectedIssue.name.match(/^(H\d+[A-Z]?)/);
+        if (modelMatch) {
+          selectedModel.value = modelMatch[1];
+        }
+        
+        // 将问题名称设置到部件输入框
+        const componentName = selectedIssue.name.replace(/^H\d+[A-Z]?/, ''); // 去掉车型前缀
+        selectedComponent.value = componentName;
       }
-      
-      // 将问题名称设置到部件输入框
-      const componentName = selectedIssue.name.replace(/^H\d+[A-Z]?/, ''); // 去掉车型前缀
-      selectedComponent.value = componentName;
       
       // 清除 localStorage 中的数据，避免重复使用
       localStorage.removeItem('selectedIssue');

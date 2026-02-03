@@ -20,7 +20,7 @@
     <!-- 生成中的加载动画 -->
     <div v-if="isGenerating" class="generating-animation">
       <el-icon class="is-loading" :size="50"><Loading /></el-icon>
-      <p class="generating-text">AI正在基于VOC数据生成可行性报告...</p>
+      <p class="generating-text">可行性报告生成中...</p>
       <el-progress :percentage="generatingProgress" :stroke-width="8" />
     </div>
 
